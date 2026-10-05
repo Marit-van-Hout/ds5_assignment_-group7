@@ -1,0 +1,88 @@
+# Sudoku Application Project Plan
+
+## 1. Project Goal
+
+- Build a beginner-friendly Sudoku application in Python with a Tkinter graphical user interface.
+- Display and edit a standard 9x9 Sudoku board.
+- Check user moves, provide a hint, solve the puzzle on request, and detect a completed puzzle.
+- Include at least two built-in puzzles from a documented public source.
+- Keep the interface, Sudoku rules, puzzle data, and solving logic in separate components.
+
+## 2. Planned Features
+
+- Show a 9x9 grid, with thicker lines separating its nine 3x3 boxes.
+- Load a selected built-in puzzle when the application starts or when the user chooses a new puzzle.
+- Let the user enter digits 1 through 9 in blank cells and clear an entry.
+- Keep the puzzle's original clues visible and prevent them from being changed.
+- Validate each entry against the cell's row, column, and 3x3 box. Give clear feedback for invalid moves without removing the user's ability to correct them.
+- Provide a **Hint** button that fills one empty editable cell with its correct value. If the puzzle is already full, explain that no hint is available.
+- Provide a **Solve** button that fills all remaining editable cells with the solution. If the puzzle has no valid solution, report that clearly.
+- Detect completion after an entry, hint, or solve action. Announce success only when all cells are filled and the completed board satisfies the Sudoku rules.
+- Optional later feature: let the user load a puzzle from a file after the built-in puzzle workflow is working.
+
+## 3. Puzzle Sources and Attribution
+
+- Include at least two puzzles from Project Euler Problem 96's public `sudoku.txt` dataset: **Grid 01** and **Grid 02** (the first two records in the file).
+- Source page: [Project Euler, Problem 96](https://projecteuler.net/problem=96).
+- Puzzle data: [Project Euler Sudoku dataset](https://projecteuler.net/resources/documents/0096_sudoku.txt).
+- In the application documentation, record the source name, URLs, dataset record identifiers, and date accessed. Preserve the original grid values when copying the two records into the project's puzzle catalog.
+- Before distributing copied puzzle data, check the source's reuse terms and include any attribution or notice it requires.
+
+## 4. Components and Planned Folder Layout
+
+```text
+Sudoku/
+	sudoku/                 # Application code
+		app.py                # Creates the application and starts Tkinter
+		gui.py                # Window, 9x9 grid, buttons, and user feedback
+		board.py              # Board state and row/column/box rule checks
+		solver.py             # Finds a valid solution and supports hint/solve actions
+		puzzles.py            # Built-in puzzle grids and their source details
+	examples/               # Small runnable demonstrations
+	tests/                  # Automated tests for rules, solving, and game behavior
+	README.md               # Setup, run instructions, controls, and puzzle attribution
+```
+
+- `gui.py` should handle display and user events, not implement Sudoku rules itself.
+- `board.py` should represent the 9x9 values, remember which cells are original clues, and validate entries.
+- `solver.py` should work with board data and return a solution or indicate that none exists; it should not depend on Tkinter.
+- `puzzles.py` should provide the built-in grids and keep their source metadata together.
+- `app.py` should connect the components and launch the window.
+- Keep optional file loading out of the first version unless the required features are complete and tested.
+
+## 5. Development Order
+
+1. Agree on the board representation, blank-cell convention, component responsibilities, and interfaces between group members.
+2. Add the two sourced puzzle records and verify that each is exactly 9 rows by 9 columns, with values from 0 to 9 (0 means blank).
+3. Implement the board model and move validation without a GUI. Make original clue cells read-only in the model.
+4. Implement and test the solver using a copy of the board so it does not accidentally change the puzzle while searching. Use it to produce a full solution.
+5. Implement hint and solve behavior using the board and solver components.
+6. Build the Tkinter window and 9x9 grid, first displaying one puzzle and accepting edits in blank cells.
+7. Connect input validation, hint, solve, puzzle selection, and completion messages to the GUI.
+8. Run the full test suite and manually try the application with both built-in puzzles. Fix usability and edge-case problems.
+9. Update the README with setup/run steps, controls, limitations, and puzzle attribution. Consider file loading only as a later extension.
+
+## 6. Testing Plan
+
+- **Puzzle data:** Each built-in puzzle has 9 rows and 9 columns, contains only digits 0 through 9, and has its source and record identifier documented.
+- **Board rules:** Accept a legal value; reject a duplicate in the same row, column, or 3x3 box; allow clearing an editable cell; and reject edits to original clues.
+- **Solver:** Solve each built-in puzzle, preserve the original clues, return a board that follows all Sudoku rules, and report an unsolvable or invalid puzzle without crashing.
+- **Hint and solve:** A hint fills exactly one editable blank with a value from the solution; solve completes the board; neither action alters original clues; both handle an already-complete board.
+- **Completion detection:** Do not report success for a partial board or a full but invalid board; report success for a correctly completed board, including after a hint or solve action.
+- **GUI input:** Accept digits 1 through 9, handle clearing a cell, reject letters and out-of-range values gracefully, and keep the window responsive to normal user actions.
+- **Integration/manual checks:** Launch the app, switch between both built-in puzzles, try valid and invalid moves, use Hint and Solve, and verify the completion message.
+- If optional file loading is added, test missing files, malformed rows, invalid characters, and valid puzzle files separately.
+
+## 7. Example Demonstrations
+
+- **Example 1: Play and validate.** Launch a built-in puzzle, enter a legal value, try a conflicting value, clear an entry, and show that original clues cannot be edited.
+- **Example 2: Get help and finish.** Load the other built-in puzzle, request a hint, use Solve, and demonstrate that completion is detected only for a valid completed board.
+
+## 8. Code Review Checklist
+
+- **Correctness:** Do row, column, and 3x3-box checks agree? Does the solver return a valid solution and preserve the original clues? Is completion checked using the whole board, not just whether it is full?
+- **Readability:** Are component responsibilities clear? Are names descriptive, functions small, and comments/docstrings used to clarify non-obvious decisions? Is Tkinter code kept separate from Sudoku logic?
+- **User-input handling:** Are blank entries and digits 1 through 9 handled consistently? Are invalid values explained without crashing or silently changing other cells? Can the user recover from a mistaken entry?
+- **Edge cases:** What happens with a full board, an invalid starting puzzle, a puzzle with no solution, a hint request when no blanks remain, and a solve request after the puzzle is already complete?
+- **Data and attribution:** Are both built-in puzzles traceable to their public source and record identifiers, and are reuse terms/required notices respected?
+- **Tests and collaboration:** Do tests cover the rules and failure cases? Are component interfaces agreed upon so separate group members can work without duplicating logic?
